@@ -1,0 +1,27 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'imgs\*'
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Install the Windows SDK 22621
+        uses: ChristopheLav/windows-sdk-install@v1
+        with:
+          version-sdk: 22621
+          features: "OptionId.UWPCPP, OptionId.DesktopCPPx64, OptionId.DesktopCPPx86, OptionId.DesktopCPParm64, OptionId.DesktopCPParm"
+
+      - name: Run the WACK of the test project
+        uses: ./
