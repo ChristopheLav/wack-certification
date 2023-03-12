@@ -37,6 +37,8 @@ runs:
     - name: "Create a check run"
       id: check-run
       uses: actions/github-script@v6
+      env:
+        parameter_url: '${{ github.event.workflow_run.html_url }}'
       with:
         script: |
           const check = await github.rest.checks.create({
@@ -45,6 +47,7 @@ runs:
             head_sha: context.sha,
             name: "${{ inputs.name }}",
             status: "in_progress",
+            details_url: process.env.parameter_url,
             output: {
               title: "",
               summary: ""
@@ -74,20 +77,25 @@ runs:
       if: steps.analysis.conclusion != 'skipped'
       env:
         summary_file: '${{ steps.analysis.outputs.summaryPath }}'
+        parameter_url: '${{ github.event.workflow_run.html_url }}'
       with:
         script: |
           const summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
-          await github.rest.checks.update({
+          const resp = await github.rest.checks.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
             check_run_id: ${{ fromJSON(steps.check-run.outputs.result).id }},
             status: "completed",
             conclusion: "${{ steps.analysis.conclusion }}",
+            details_url: process.env.parameter_url,
             output: {
               title: "${{ steps.analysis.outputs.title }}",
               summary: summary
             },
           });
+          console.log(`Check run create response: ${resp.status}`)
+          console.log(`Check run URL: ${resp.data.url}`)
+          console.log(`Check run HTML: ${resp.data.html_url}`)
 
 branding:
   icon: check-circle
