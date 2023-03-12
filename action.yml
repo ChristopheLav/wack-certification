@@ -51,7 +51,6 @@ runs:
     - name: "Create a check run"
       uses: actions/github-script@v6
       env:
-        parameter_url: '${{ github.event.workflow_run.html_url }}'
         summary_file: '${{ steps.analysis.outputs.summaryPath }}'
       with:
         script: |
@@ -63,7 +62,6 @@ runs:
             name: "${{ steps.analysis.outputs.name }}",
             status: "completed",
             conclusion: "${{ steps.analysis.outputs.conclusion }}",
-            details_url: process.env.parameter_url,
             output: {
               title: "${{ steps.analysis.outputs.title }}",
               summary: summary

@@ -40,6 +40,8 @@ The available rules of the Windows App Certification Kit (WACK) are documented [
 ```
 <!-- end usage -->
 
+Also, you need to ensure your workflow has the permission `checks:write`.
+
 ## License
 
 The scripts and documentation in this project are released under the [MIT License](LICENSE)
