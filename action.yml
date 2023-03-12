@@ -53,7 +53,6 @@ runs:
       env:
         parameter_url: '${{ github.event.workflow_run.html_url }}'
       with:
-        debug: ${{ secrets.ACTIONS_STEP_DEBUG || false }}
         script: |
           await github.rest.checks.create({
             owner: context.repo.owner,
