@@ -19,6 +19,7 @@ $ThreatAsWarningRules = $threatAsWarning -split ',' -replace '^\s+|\s+$' | ForEa
 
 $results = Select-Xml -XPath "//TEST" -Path $reportPath
 if($results) { 
+    
     $metadata = Select-Xml -XPath "//REPORT" -Path $reportPath
     $r_arch = $metadata[0].Node.TOOLSET_ARCHITECTURE
     $r_os = $metadata[0].Node.OS
@@ -30,8 +31,11 @@ if($results) {
     $r_app_version = $metadata[0].Node.APP_VERSION
     $r_report_time = $metadata[0].Node.ReportGenerationTime
 
+    $title = "WACK ($r_arch)"
+    $summary = ""
+
     "# Windows App Certification Kit ($r_arch)" >> $env:GITHUB_STEP_SUMMARY
-    "## Certification Summary" >> $env:GITHUB_STEP_SUMMARY
+    "## Summary" >> $env:GITHUB_STEP_SUMMARY
     "__Overall Result:__ $r_result" >> $env:GITHUB_STEP_SUMMARY
     "__Operating System:__ $r_os" >> $env:GITHUB_STEP_SUMMARY
     "__Operating System Version:__ $r_os_version" >> $env:GITHUB_STEP_SUMMARY
@@ -41,14 +45,35 @@ if($results) {
     "__Application Version:__ $r_app_version" >> $env:GITHUB_STEP_SUMMARY
     "__Generation Time:__ $r_report_time" >> $env:GITHUB_STEP_SUMMARY
 
-    "## Certification Results" >> $env:GITHUB_STEP_SUMMARY
+    "## Results" >> $env:GITHUB_STEP_SUMMARY
     "| ID | Description | Result |" >> $env:GITHUB_STEP_SUMMARY
     "| - | - | - |" >> $env:GITHUB_STEP_SUMMARY
-    if($results.Count -gt 0) {
-        $countSuccess = 0
-        $countFailed = 0
-        $countUnknow = 0
 
+
+
+
+    $summary += "`n# Windows App Certification Kit ($r_arch)"
+    $summary += "`n## Summary"
+    $summary += "`n__Overall Result:__ $r_result"
+    $summary += "`n__Operating System:__ $r_os"
+    $summary += "`n__Operating System Version:__ $r_os_version"
+    $summary += "`n__Architecture:__ $r_arch"
+    $summary += "`n__Application Type:__ $r_app_type"
+    $summary += "`n__Application Name:__ $r_app_name"
+    $summary += "`n__Application Version:__ $r_app_version"
+    $summary += "`n__Generation Time:__ $r_report_time"
+
+    $summary += "`n## Results"
+    $summary += "`n| ID | Description | Result |"
+    $summary += "`n| - | - | - |"
+
+
+
+    $countSuccess = 0
+    $countFailed = 0
+    $countUnknow = 0
+
+    if($results.Count -gt 0) {
         foreach($result in $results) {
             $r_id = $result.Node.Index
             $r_desc = $result.Node.Description
@@ -59,40 +84,47 @@ if($results) {
                             $countUnknow++
                             Write-Host ("::warning::[FAIL][{0}] {1}" -f $r_id,$r_desc)
                             "| $r_id | $r_desc | :warning: FAIL |" >> $env:GITHUB_STEP_SUMMARY
+                            $summary += "`n| $r_id | $r_desc | :warning: FAIL |"
                         } else {
                             $countFailed++
                             Write-Host ("::error::[FAIL][{0}] {1}" -f $r_id,$r_desc)
                             "| $r_id | $r_desc | :x: FAIL |" >> $env:GITHUB_STEP_SUMMARY
+                            $summary += "`n| $r_id | $r_desc | :x: FAIL |"
                         }
                     }
                     "PASS" { 
                         $countSuccess++
                         Write-Host ("[PASS][{0}] {1}" -f $r_id,$r_desc)
                         "| $r_id | $r_desc | :white_check_mark: PASS |" >> $env:GITHUB_STEP_SUMMARY
+                        $summary += "`n| $r_id | $r_desc | :white_check_mark: PASS |"
                     }
                     default { 
                         $countUnknow++
                         Write-Host ("::warning::[UNKNOW][{0}] {1}" -f $r_id,$r_desc)
                         "| $r_id | $r_desc | :grey_question: UNKNOW |" >> $env:GITHUB_STEP_SUMMARY
+                        $summary += "`n| $r_id | $r_desc | :grey_question: UNKNOW |"
                     }
                 }
             } else {
                 "| $r_id | $r_desc | :heavy_minus_sign: IGNORED |" >> $env:GITHUB_STEP_SUMMARY
+                $summary += "`n| $r_id | $r_desc | :heavy_minus_sign: IGNORED |"
             }
         }
-
-        Write-Host ("{0} WACK tests succeeded" -f $countSuccess)
-        if ($countUnknow -gt 0) {
-            Write-Host ("::warning::{0} WACK tests in unknow state" -f $countUnknow)
-        } else {
-            Write-Host ("{0} WACK tests in unknow state" -f $countUnknow)
-        }
-        if ($countFailed -gt 0) {
-            Write-Host ("::error::{0} WACK tests failed" -f $countFailed)
-            Write-Error "Certification has failed!"
-        } else {
-            Write-Host ("{0} WACK tests failed" -f $countFailed)
-            Write-Host "Certification has succeed!"
-        }
     }
+
+    Write-Host ("{0} WACK tests succeeded" -f $countSuccess)
+    Write-Host ("{0} WACK tests in unknow state" -f $countUnknow)
+    Write-Host ("{0} WACK tests failed" -f $countFailed)
+
+    if ($countFailed -gt 0) {
+        Write-Output "conclusion=failure" >> $env:GITHUB_OUTPUT
+        Write-Error "Certification has failed!"
+    } else {
+        Write-Output "conclusion=success" >> $env:GITHUB_OUTPUT    
+        Write-Host "Certification has succeed!"
+    }
+
+    Write-Output "title=$title" >> $env:GITHUB_OUTPUT
+    Write-Output "summary=$summary" >> $env:GITHUB_OUTPUT
+    
 }
