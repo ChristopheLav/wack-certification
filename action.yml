@@ -59,7 +59,7 @@ runs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             head_sha: context.sha,
-            name: "my-check-name",
+            name: "${{ steps.analysis.outputs.name }}",
             status: "completed",
             conclusion: "${{ github.event.workflow_run.conclusion }}",
             details_url: process.env.parameter_url,

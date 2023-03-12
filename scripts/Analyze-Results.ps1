@@ -111,7 +111,7 @@ if($results) {
     $preSummary = ""
     $preSummary += "`n# Windows App Certification Kit ($r_arch)"
     $preSummary += "`n## Summary"
-    $preSummary += "`n__Overall Result:__ " + (if ($countFailed -gt 0) { ":x:" } else { ":white_check_mark:" })
+    $preSummary += "`n__Overall Result:__ " + $(if ($countFailed -gt 0) { ":x:" } else { ":white_check_mark:" })
     $preSummary += "`n__Operating System:__ $r_os"
     $preSummary += "`n__Operating System Version:__ $r_os_version"
     $preSummary += "`n__Architecture:__ $r_arch"
@@ -125,6 +125,7 @@ if($results) {
     $summaryPath = (Split-Path -parent $reportPath) + "\summary.md"
     $summary | Out-File $summaryPath -Encoding utf8
 
+    Write-Output "name=check-wack-$r_arch" >> $env:GITHUB_OUTPUT
     Write-Output "title=$title" >> $env:GITHUB_OUTPUT
     Write-Output "summaryPath=$summaryPath" >> $env:GITHUB_OUTPUT
     
