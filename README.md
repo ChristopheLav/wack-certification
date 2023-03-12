@@ -1,6 +1,6 @@
 # Windows App Certification Kit action
 
-This action allows to run the Windows App Certification Kit (WACK) and generate test results (certification report + check run).
+This action allows to run the Windows App Certification Kit (WACK) and generate test results (certification report + Check Run).
 
 ## Requirements
 
@@ -14,6 +14,7 @@ Refer [here](CHANGELOG.md) to the changelog.
 
 | Input | Required | Example | Default Value | Description |
 |-|-|-|-|-|
+| `name`          | Yes | 'WACK (x64)'  | | Name of the WACK execution (used for the GitHub Check Run) |
 | `package-path`          | Yes | '/release/DemoApp.msixbundle'  | | Relative path of the target package to test with the WACK (appxbundle or msixbundle) |
 | `report-name`          | Yes | 'DemoApp.Certification.xml'  | | Desired name of the certification report |
 | `ignore-rules`          | No | '38,81,83'  | | List of WACK rules to ignore separated by a comma |
@@ -33,6 +34,7 @@ The available rules of the Windows App Certification Kit (WACK) are documented [
 ```yaml
 - uses: ChristopheLav/wack-certification@v1
   with:
+    name: 'WACK (x64)'
     package-path: '/release/DemoApp.msixbundle'
     report-name: 'DemoApp.Certification.xml'
     ignore-rules: '38,81'

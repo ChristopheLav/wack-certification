@@ -44,6 +44,7 @@ jobs:
         id: certification
         uses: ./
         with:
+          name: 'WACK (x64)'
           package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
           report-name: 'DemoApp.Certification.xml'
           ignore-rules: '38,81'

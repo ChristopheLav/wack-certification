@@ -1,6 +1,9 @@
 name: 'Run the Windows App Certification Kit'
 description: 'Allows to run the Windows App Certification Kit (WACK) and generate test results'
 inputs:
+  name:
+    description: "Name of the WACK execution"
+    required: true
   package-path:
     description: "Relative path of the target package to test with the WACK (appxbundle or msixbundle file)"
     required: true
@@ -40,7 +43,7 @@ runs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             head_sha: context.sha,
-            name: "${{ steps.analysis.outputs.name }}",
+            name: "${{ inputs.name }}",
             status: "in_progress",
             output: {
               title: "",
@@ -67,6 +70,7 @@ runs:
 
     - name: "Update the check run conclusion"
       uses: actions/github-script@v6
+      if: setps.analysis.conclusion != 'skipped'
       env:
         summary_file: '${{ steps.analysis.outputs.summaryPath }}'
       with:
@@ -75,7 +79,7 @@ runs:
           await github.rest.checks.update({
             id: ${{ fromJson(steps.check-run.outputs.result).data.id }},
             status: "completed",
-            conclusion: "${{ steps.analysis.outputs.conclusion }}",
+            conclusion: "${{ steps.analysis.conclusion }}",
             output: {
               title: "${{ steps.analysis.outputs.title }}",
               summary: summary
