@@ -52,30 +52,25 @@ if($results) {
                         if ($ThreatAsWarningRules -contains $r_id) {
                             $countUnknow++
                             Write-Host ("::warning::[FAIL][{0}] {1}" -f $r_id,$r_desc)
-                            "| $r_id | $r_desc | :warning: FAIL |" >> $env:GITHUB_STEP_SUMMARY
                             $summary += "`n| $r_id | $r_desc | :warning: FAIL |"
                         } else {
                             $countFailed++
                             Write-Host ("::error::[FAIL][{0}] {1}" -f $r_id,$r_desc)
-                            "| $r_id | $r_desc | :x: FAIL |" >> $env:GITHUB_STEP_SUMMARY
                             $summary += "`n| $r_id | $r_desc | :x: FAIL |"
                         }
                     }
                     "PASS" { 
                         $countSuccess++
                         Write-Host ("[PASS][{0}] {1}" -f $r_id,$r_desc)
-                        "| $r_id | $r_desc | :white_check_mark: PASS |" >> $env:GITHUB_STEP_SUMMARY
                         $summary += "`n| $r_id | $r_desc | :white_check_mark: PASS |"
                     }
                     default { 
                         $countUnknow++
                         Write-Host ("::warning::[UNKNOW][{0}] {1}" -f $r_id,$r_desc)
-                        "| $r_id | $r_desc | :grey_question: UNKNOW |" >> $env:GITHUB_STEP_SUMMARY
                         $summary += "`n| $r_id | $r_desc | :grey_question: UNKNOW |"
                     }
                 }
             } else {
-                "| $r_id | $r_desc | :heavy_minus_sign: IGNORED |" >> $env:GITHUB_STEP_SUMMARY
                 $summary += "`n| $r_id | $r_desc | :heavy_minus_sign: IGNORED |"
             }
         }
@@ -92,21 +87,6 @@ if($results) {
         Write-Output "conclusion=success" >> $env:GITHUB_OUTPUT    
         Write-Host "Certification has succeed!"
     }
-
-    # "# Windows App Certification Kit ($r_arch)" >> $env:GITHUB_STEP_SUMMARY
-    # "## Summary" >> $env:GITHUB_STEP_SUMMARY
-    # "__Overall Result:__ $r_result" >> $env:GITHUB_STEP_SUMMARY
-    # "__Operating System:__ $r_os" >> $env:GITHUB_STEP_SUMMARY
-    # "__Operating System Version:__ $r_os_version" >> $env:GITHUB_STEP_SUMMARY
-    # "__Architecture:__ $r_arch" >> $env:GITHUB_STEP_SUMMARY
-    # "__Application Type:__ $r_app_type" >> $env:GITHUB_STEP_SUMMARY
-    # "__Application Name:__ $r_app_name" >> $env:GITHUB_STEP_SUMMARY
-    # "__Application Version:__ $r_app_version" >> $env:GITHUB_STEP_SUMMARY
-    # "__Generation Time:__ $r_report_time" >> $env:GITHUB_STEP_SUMMARY
-
-    # "## Results" >> $env:GITHUB_STEP_SUMMARY
-    # "| ID | Description | Result |" >> $env:GITHUB_STEP_SUMMARY
-    # "| - | - | - |" >> $env:GITHUB_STEP_SUMMARY
 
     $preSummary = ""
     $preSummary += "`n# Windows App Certification Kit ($r_arch)"
