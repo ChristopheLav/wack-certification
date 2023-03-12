@@ -1,6 +1,10 @@
 # Windows App Certification Kit action
 
+[![Test](https://github.com/ChristopheLav/wack-certification/actions/workflows/test.yml/badge.svg)](https://github.com/ChristopheLav/wack-certification/actions/workflows/test.yml)
+
 This action allows to run the Windows App Certification Kit (WACK) and generate test results (certification report + Check Run).
+
+![Example of WACK check run](imgs/wack-check-run-example.png)
 
 ## Requirements
 
