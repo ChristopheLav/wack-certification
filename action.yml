@@ -1,0 +1,98 @@
+name: 'Run the Windows App Certification Kit'
+description: 'Allows to run the Windows App Certification Kit (WACK) and generate test results'
+inputs:
+  name:
+    description: "Name of the WACK execution"
+    required: true
+  package-path:
+    description: "Relative path of the target package to test with the WACK (appxbundle or msixbundle file)"
+    required: true
+  report-name:
+    description: "Desired name of the certification report"
+    required: true
+  ignore-rules:
+    description: "List of WACK rules to ignore separated by a comma (optional)"
+    required: false
+  threat-as-warning-rules:
+    description: "List of WACK rules to threat as warning if failed separated by a comma (optional)"
+    required: false
+
+outputs:
+  report-path:
+    description: "Path of the certification report"
+    value: ${{ steps.certification.outputs.reportPath }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Ensure Windows runner type
+      shell: pwsh
+      run: >
+        if (-not $IsWindows) {
+            Write-Host "ERROR: this action is only compatible with Windows!"
+            Write-Host
+            Exit 1
+        }
+
+    - name: "Create a check run"
+      id: check-run
+      uses: actions/github-script@v6
+      env:
+        sha_workflow: ${{ github.event.workflow_run.head_commit.id }}
+        sha_pr: ${{ github.event.pull_request.head.sha }}
+      with:
+        script: |
+          const check = await github.rest.checks.create({
+            head_sha: (process.env.sha_workflow || process.env.sha_pr || context.sha),
+            name: "${{ inputs.name }}",
+            status: "in_progress",
+            output: {
+              title: "",
+              summary: ""
+            },
+            ...context.repo
+          });
+          return { id: check.data.id }
+
+    - name: Run the Windows App Certification Kit
+      id: certification
+      shell: pwsh
+      run: >
+        ${{ github.action_path }}\scripts\Run-WACK.ps1
+        "${{ inputs.package-path }}"
+        "${{ inputs.report-name }}"
+
+    - name: Analyze the Windows App Certificat Kit results
+      id: analysis
+      shell: pwsh
+      run: >
+        ${{ github.action_path }}\scripts\Analyze-Results.ps1
+        "${{ steps.certification.outputs.reportPath }}"
+        "${{ inputs.ignore-rules }}"
+        "${{ inputs.threat-as-warning-rules }}"
+
+    - name: "Update the check run conclusion"
+      uses: actions/github-script@v6
+      if: steps.analysis.conclusion != 'skipped'
+      env:
+        summary_file: '${{ steps.analysis.outputs.summaryPath }}'
+      with:
+        script: |
+          const summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
+          const resp = await github.rest.checks.update({
+            check_run_id: ${{ fromJSON(steps.check-run.outputs.result).id }},
+            status: "completed",
+            conclusion: "${{ steps.analysis.conclusion }}",
+            output: {
+              title: "${{ steps.analysis.outputs.title }}",
+              summary: summary
+            },
+            ...context.repo
+          });
+          console.log(`Check run create response: ${resp.status}`)
+          console.log(`Check run URL: ${resp.data.url}`)
+          console.log(`Check run HTML: ${resp.data.html_url}`)
+
+branding:
+  icon: check-circle
+  color: green

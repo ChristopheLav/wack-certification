@@ -10,7 +10,8 @@ on:
 jobs:
   test:
     runs-on: windows-latest
-
+    permissions:
+      checks: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,5 +24,35 @@ jobs:
           version-sdk: 22621
           features: "OptionId.UWPCPP, OptionId.DesktopCPPx64, OptionId.DesktopCPPx86, OptionId.DesktopCPParm64, OptionId.DesktopCPParm"
 
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '6.2.x'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          vs-version: '[17.2,18.0)'
+
+      - name: Install dependencies
+        run: msbuild .github\DemoApp\DemoApp.sln -t:restore /p:RestoreLockedMode=true /p:platform=x64 /p:configuration=Release
+
+      - name: Build application
+        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:AppxBundlePlatforms=x64 /p:AppxBundle=Always /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload
+
       - name: Run the WACK of the test project
+        id: certification
         uses: ./
+        with:
+          name: 'WACK (x64)'
+          package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
+          report-name: 'DemoApp.Certification.xml'
+          ignore-rules: '38,81'
+          threat-as-warning-rules: '61'
+
+      - name: Upload Certification report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: certification
+          path: ${{ steps.certification.outputs.report-path }}
