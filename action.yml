@@ -37,7 +37,7 @@ runs:
       run: >
         ${{ github.action_path }}\scripts\Run-WACK.ps1
         "${{ inputs.package-path }}"
-        ${{ inputs.report-name }}
+        "${{ inputs.report-name }}"
 
     - name: Analyze the Windows App Certificat Kit results
       shell: pwsh

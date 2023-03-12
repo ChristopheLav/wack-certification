@@ -46,10 +46,11 @@ jobs:
           package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
           report-name: 'DemoApp.Certification.xml'
           ignore-rules: '38,81'
-          threat-as-warning-rules: '83'
+          threat-as-warning-rules: '61'
 
       - name: Upload Certification report
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: certification
           path: ${{ steps.certification.outputs.report-path }}

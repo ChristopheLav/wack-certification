@@ -1,6 +1,6 @@
 # Windows App Certification Kit action
 
-This action allows to run the Windows App Certification Kit (WACK) and generate test results.
+This action allows to run the Windows App Certification Kit (WACK) and generate test results (certification report + job summary).
 
 ## Requirements
 
@@ -26,7 +26,6 @@ The available rules of the Windows App Certification Kit (WACK) are documented [
 | Output | Example | Description |
 |-|-|-|
 | `report-path`          | '/wack-certification/DemoApp.Certification.xml'  | Path of the certification report |
-
 
 ## Usage
 
