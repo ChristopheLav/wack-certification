@@ -52,6 +52,7 @@ if($results) {
             $r_optional = $result.Node.OPTIONAL
             if ($IgnoreRules.Contains($r_id)) {
                 $countIgnored++
+                Write-Host ("[IGNORED][{0}] {1}" -f $r_id,$r_desc)
                 $summary += "`n| $r_id | $r_desc  | $r_optional | :heavy_minus_sign: IGNORED | $r_time |"
             } else {
                 switch($result.Node.Result.InnerText) {
