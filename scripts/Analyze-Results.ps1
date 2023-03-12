@@ -49,7 +49,7 @@ if($results) {
             $r_desc = $result.Node.Description
             $r_time = $result.Node.EXECUTIONTIME
             $r_optional = $result.Node.OPTIONAL
-            if ($IgnoreRules -notcontains $r_id)) {
+            if ($IgnoreRules -notcontains $r_id) {
                 switch($result.Node.Result.InnerText) {
                     "FAIL" { 
                         if ($ThreatAsWarningRules -contains $r_id) {
