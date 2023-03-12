@@ -62,7 +62,7 @@ runs:
             head_sha: context.sha,
             name: "${{ steps.analysis.outputs.name }}",
             status: "completed",
-            conclusion: "${{ github.event.workflow_run.conclusion }}",
+            conclusion: "${{ steps.analysis.outputs.conclusion }}",
             details_url: process.env.parameter_url,
             output: {
               title: "${{ steps.analysis.outputs.title }}",

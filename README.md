@@ -1,6 +1,6 @@
 # Windows App Certification Kit action
 
-This action allows to run the Windows App Certification Kit (WACK) and generate test results (certification report + job summary).
+This action allows to run the Windows App Certification Kit (WACK) and generate test results (certification report + check run).
 
 ## Requirements
 
