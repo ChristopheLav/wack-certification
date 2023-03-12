@@ -31,6 +31,23 @@ runs:
             Exit 1
         }
 
+    - name: "Create a check run"
+      id: check-run
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            head_sha: context.sha,
+            name: "${{ steps.analysis.outputs.name }}",
+            status: "in_progress",
+            output: {
+              title: "",
+              summary: ""
+            },
+          });
+
     - name: Run the Windows App Certification Kit
       id: certification
       shell: pwsh
@@ -48,18 +65,15 @@ runs:
         "${{ inputs.ignore-rules }}"
         "${{ inputs.threat-as-warning-rules }}"
 
-    - name: "Create a check run"
+    - name: "Update the check run conclusion"
       uses: actions/github-script@v6
       env:
         summary_file: '${{ steps.analysis.outputs.summaryPath }}'
       with:
         script: |
-          var summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
-          await github.rest.checks.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            head_sha: context.sha,
-            name: "${{ steps.analysis.outputs.name }}",
+          const summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
+          await github.rest.checks.update({
+            id: ${{ fromJson(steps.check-run.outputs.result).data.id }},
             status: "completed",
             conclusion: "${{ steps.analysis.outputs.conclusion }}",
             output: {

@@ -31,7 +31,8 @@ if($results) {
     $r_app_version = $metadata[0].Node.APP_VERSION
     $r_report_time = $metadata[0].Node.ReportGenerationTime
 
-    $title = "WACK ($r_arch)"
+    $name = "WACK ($r_arch)"
+    $title = "Windows App Certification Kit ($r_arch)"
     $summary = ""
 
     $countSuccess = 0
@@ -89,7 +90,6 @@ if($results) {
     }
 
     $preSummary = ""
-    $preSummary += "`n# Windows App Certification Kit ($r_arch)"
     $preSummary += "`n## Summary"
     $preSummary += "`n__Overall Result:__ " + $(if ($countFailed -gt 0) { ":x:" } else { ":white_check_mark:" })
     $preSummary += "`n__Operating System:__ $r_os"
@@ -105,8 +105,14 @@ if($results) {
     $summaryPath = (Split-Path -parent $reportPath) + "\summary.md"
     $summary | Out-File $summaryPath -Encoding utf8
 
-    Write-Output "name=check-wack-$r_arch" >> $env:GITHUB_OUTPUT
+    Write-Output "name=$name" >> $env:GITHUB_OUTPUT
     Write-Output "title=$title" >> $env:GITHUB_OUTPUT
     Write-Output "summaryPath=$summaryPath" >> $env:GITHUB_OUTPUT
     
+} else {
+
+    Write-Output "conclusion=failure" >> $env:GITHUB_OUTPUT 
+
+    Write-Host "::warning::Unable to find a valid WACK execution report to analyze!"
+
 }
