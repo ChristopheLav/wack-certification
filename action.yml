@@ -35,14 +35,14 @@ runs:
       id: certification
       shell: pwsh
       run: >
-        ${{ github.action_path }}/scripts/Run-WACK.ps1
+        ${{ github.action_path }}\scripts\Run-WACK.ps1
         "${{ inputs.package-path }}"
         ${{ inputs.report-name }}
 
     - name: Analyze the Windows App Certificat Kit results
       shell: pwsh
       run: >
-        ${{ github.action_path }}/scripts/Analyze-Results.ps1
+        ${{ github.action_path }}\scripts\Analyze-Results.ps1
         "${{ steps.certification.outputs.reportPath }}"
         "${{ inputs.ignore-rules }}"
         "${{ inputs.threat-as-warning-rules }}"

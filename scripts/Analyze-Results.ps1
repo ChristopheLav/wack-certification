@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 $IgnoreRules = $ignoreRules -split ',' -replace '^\s+|\s+$' | ForEach-Object { "$_" }
 $ThreatAsWarningRules = $threatAsWarning -split ',' -replace '^\s+|\s+$' | ForEach-Object { "$_" }
 
-$results = Select-Xml -XPath "//TEST" -Path ${{ steps.certification.outputs.reportPath }}
+$results = Select-Xml -XPath "//TEST" -Path $reportPath
 if($results) { 
     if($results.Count -gt 0) {
         $countSuccess = 0

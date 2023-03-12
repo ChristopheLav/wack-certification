@@ -17,7 +17,7 @@ Write-Output "Reseting App certification..."
 & "$appcertpath" reset
 
 Write-Output "Initializing output directory..."
-$reportoutputdirectory = "${{ github.workspace }}\wack-certification"
+$reportoutputdirectory = "${env:GITHUB_WORKSPACE}\wack-certification"
 Write-Verbose "reportoutputdirectory = $reportoutputdirectory"
 New-Item -ItemType Directory -Force -Path $reportoutputdirectory | Out-Null
 

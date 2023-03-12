@@ -34,16 +34,16 @@ jobs:
           vs-version: '[17.2,18.0)'
 
       - name: Install dependencies
-        run: msbuild .github\DemoApp\DemoApp.sln -t:restore /p:RestoreLockedMode=true
+        run: msbuild .github\DemoApp\DemoApp.sln -t:restore /p:RestoreLockedMode=true /p:platform=x64 /p:configuration=Release
 
       - name: Build application
-        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:platform=x64 /p:configuration=Release
+        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload
 
       - name: Run the WACK of the test project
         id: certification
         uses: ./
         with:
-          package-path: ${{ github.workspace }}\b\x64\DemoApp.msixbundle'
+          package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_x64_Test\DemoApp_1.0.0.0_x64.msixbundle'
           report-name: 'DemoApp.Certification.xml'
           ignore-rules: '38,81'
           threat-as-warning-rules: '83'
