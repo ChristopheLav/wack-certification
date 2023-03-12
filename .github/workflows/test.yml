@@ -41,18 +41,34 @@ jobs:
         run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:AppxBundlePlatforms=x64 /p:AppxBundle=Always /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload
 
       - name: Run the WACK of the test project
-        id: certification
+        id: certification-1
         uses: ./
         with:
-          name: 'WACK (x64)'
+          name: 'WACK (x64 - 1)'
           package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
-          report-name: 'DemoApp.Certification.xml'
+          report-name: 'DemoApp.Certification.1.xml'
           ignore-rules: '38,81'
           threat-as-warning-rules: '61'
 
-      - name: Upload Certification report
+      - name: Upload Certification report 1
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: certification
-          path: ${{ steps.certification.outputs.report-path }}
+          path: ${{ steps.certification-1.outputs.report-path }}
+
+      - name: Run the WACK of the test project (without ignore rules)
+        id: certification-2
+        uses: ./
+        with:
+          name: 'WACK (x64 - 2)'
+          package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
+          report-name: 'DemoApp.Certification.2.xml'
+          threat-as-warning-rules: '61'
+
+      - name: Upload Certification report 2
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: certification
+          path: ${{ steps.certification-2.outputs.report-path }}
