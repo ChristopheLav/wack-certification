@@ -70,7 +70,7 @@ runs:
 
     - name: "Update the check run conclusion"
       uses: actions/github-script@v6
-      if: setps.analysis.conclusion != 'skipped'
+      if: steps.analysis.conclusion != 'skipped'
       env:
         summary_file: '${{ steps.analysis.outputs.summaryPath }}'
       with:
