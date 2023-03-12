@@ -37,10 +37,13 @@ runs:
     - name: "Create a check run"
       id: check-run
       uses: actions/github-script@v6
+      env:
+        sha_workflow: ${{ github.event.workflow_run.head_commit.id }}
+        sha_pr: ${{ github.event.pull_request.head.sha }}
       with:
         script: |
           const check = await github.rest.checks.create({
-            head_sha: context.sha,
+            head_sha: (process.env.sha_workflow || process.env.sha_pr || context.sha),
             name: "${{ inputs.name }}",
             status: "in_progress",
             output: {
