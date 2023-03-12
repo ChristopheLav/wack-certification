@@ -38,7 +38,7 @@ runs:
       id: check-run
       uses: actions/github-script@v6
       env:
-        parameter_url: '${{ github.event.workflow_run.html_url }}'
+        parameter_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
       with:
         script: |
           const check = await github.rest.checks.create({
@@ -77,7 +77,6 @@ runs:
       if: steps.analysis.conclusion != 'skipped'
       env:
         summary_file: '${{ steps.analysis.outputs.summaryPath }}'
-        parameter_url: '${{ github.event.workflow_run.html_url }}'
       with:
         script: |
           const summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
@@ -87,7 +86,6 @@ runs:
             check_run_id: ${{ fromJSON(steps.check-run.outputs.result).id }},
             status: "completed",
             conclusion: "${{ steps.analysis.conclusion }}",
-            details_url: process.env.parameter_url,
             output: {
               title: "${{ steps.analysis.outputs.title }}",
               summary: summary

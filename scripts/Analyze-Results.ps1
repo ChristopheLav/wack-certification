@@ -40,39 +40,41 @@ if($results) {
     $countUnknow = 0
 
     $summary += "`n## Results"
-    $summary += "`n| ID | Description | Result |"
-    $summary += "`n| - | - | - |"
+    $summary += "`n| ID | Description | Optional | Result | Time |"
+    $summary += "`n| - | - | - | - | - |"
 
     if($results.Count -gt 0) {
         foreach($result in $results) {
             $r_id = $result.Node.Index
             $r_desc = $result.Node.Description
+            $r_time = $result.Node.EXECUTIONTIME
+            $r_optional = $result.Node.OPTIONAL
             if ($IgnoreRules -notcontains $result.Node.Index) {
                 switch($result.Node.Result.InnerText) {
                     "FAIL" { 
                         if ($ThreatAsWarningRules -contains $r_id) {
                             $countUnknow++
                             Write-Host ("::warning::[FAIL][{0}] {1}" -f $r_id,$r_desc)
-                            $summary += "`n| $r_id | $r_desc | :warning: FAIL |"
+                            $summary += "`n| $r_id | $r_desc | $r_optional | :warning: FAIL | $r_time |"
                         } else {
                             $countFailed++
                             Write-Host ("::error::[FAIL][{0}] {1}" -f $r_id,$r_desc)
-                            $summary += "`n| $r_id | $r_desc | :x: FAIL |"
+                            $summary += "`n| $r_id | $r_desc  | $r_optional | :x: FAIL | $r_time |"
                         }
                     }
                     "PASS" { 
                         $countSuccess++
                         Write-Host ("[PASS][{0}] {1}" -f $r_id,$r_desc)
-                        $summary += "`n| $r_id | $r_desc | :white_check_mark: PASS |"
+                        $summary += "`n| $r_id | $r_desc  | $r_optional | :white_check_mark: PASS | $r_time |"
                     }
                     default { 
                         $countUnknow++
                         Write-Host ("::warning::[UNKNOW][{0}] {1}" -f $r_id,$r_desc)
-                        $summary += "`n| $r_id | $r_desc | :grey_question: UNKNOW |"
+                        $summary += "`n| $r_id | $r_desc  | $r_optional | :grey_question: UNKNOW | $r_time |"
                     }
                 }
             } else {
-                $summary += "`n| $r_id | $r_desc | :heavy_minus_sign: IGNORED |"
+                $summary += "`n| $r_id | $r_desc  | $r_optional | :heavy_minus_sign: IGNORED | $r_time |"
             }
         }
     }
