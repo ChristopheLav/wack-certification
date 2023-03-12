@@ -37,7 +37,7 @@ jobs:
         run: msbuild .github\DemoApp\DemoApp.sln -t:restore /p:RestoreLockedMode=true /p:platform=x64 /p:configuration=Release
 
       - name: Build application
-        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload
+        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:AppxBundlePlatforms=x64 /p:AppxBundle=Always /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload
 
       - name: Run the WACK of the test project
         id: certification
