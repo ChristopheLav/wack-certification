@@ -2,7 +2,8 @@
 
 ## v1.0.1
 
-- Fixed management of optional parameters (rules)
+- Fixed management of optional parameters
+- Fixed management of ignored rules
 
 ## v1.0.0
 
