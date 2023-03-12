@@ -78,7 +78,7 @@ runs:
         script: |
           const summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
           await github.rest.checks.update({
-            id: ${{ fromJSON(steps.check-run.outputs.result).id }},
+            check_run_id: ${{ fromJSON(steps.check-run.outputs.result).id }},
             status: "completed",
             conclusion: "${{ steps.analysis.conclusion }}",
             output: {
