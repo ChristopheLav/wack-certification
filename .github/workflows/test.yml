@@ -23,5 +23,33 @@ jobs:
           version-sdk: 22621
           features: "OptionId.UWPCPP, OptionId.DesktopCPPx64, OptionId.DesktopCPPx86, OptionId.DesktopCPParm64, OptionId.DesktopCPParm"
 
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '6.2.x'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          vs-version: '[17.2,18.0)'
+
+      - name: Install dependencies
+        run: msbuild .github\DemoApp\DemoApp.sln -t:restore /p:RestoreLockedMode=true
+
+      - name: Build application
+        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:platform=x64 /p:configuration=Release
+
       - name: Run the WACK of the test project
+        id: certification
         uses: ./
+        with:
+          package-path: ${{ github.workspace }}\b\x64\DemoApp.msixbundle'
+          report-name: 'DemoApp.Certification.xml'
+          ignore-rules: '38,81'
+          threat-as-warning-rules: '83'
+
+      - name: Upload Certification report
+        uses: actions/upload-artifact@v3
+        with:
+          name: certification
+          path: ${{ steps.certification.outputs.report-path }}

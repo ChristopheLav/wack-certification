@@ -1,0 +1,52 @@
+name: 'Run the Windows App Certification Kit'
+description: 'Allows to run the Windows App Certification Kit (WACK) and generate test results'
+inputs:
+  package-path:
+    description: "Relative path of the target package to test with the WACK (appxbundle or msixbundle file)"
+    required: true
+  report-name:
+    description: "Desired name of the certification report"
+    required: true
+  ignore-rules:
+    description: "List of WACK rules to ignore separated by a comma (optional)"
+    required: false
+  threat-as-warning-rules:
+    description: "List of WACK rules to threat as warning if failed separated by a comma (optional)"
+    required: false
+
+outputs:
+  report-path:
+    description: "Path of the certification report"
+    value: ${{ steps.certification.outputs.reportPath }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Ensure Windows runner type
+      shell: pwsh
+      run: >
+        if (-not $IsWindows) {
+            Write-Host "ERROR: this action is only compatible with Windows!"
+            Write-Host
+            Exit 1
+        }
+
+    - name: Run the Windows App Certification Kit
+      id: certification
+      shell: pwsh
+      run: >
+        ${{ github.action_path }}/scripts/Run-WACK.ps1
+        "${{ inputs.package-path }}"
+        ${{ inputs.report-name }}
+
+    - name: Analyze the Windows App Certificat Kit results
+      shell: pwsh
+      run: >
+        ${{ github.action_path }}/scripts/Analyze-Results.ps1
+        "${{ steps.certification.outputs.reportPath }}"
+        "${{ inputs.ignore-rules }}"
+        "${{ inputs.threat-as-warning-rules }}"
+
+branding:
+  icon: check-circle
+  color: green
