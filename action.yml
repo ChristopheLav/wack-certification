@@ -40,8 +40,6 @@ runs:
       with:
         script: |
           const check = await github.rest.checks.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
             head_sha: context.sha,
             name: "${{ inputs.name }}",
             status: "in_progress",
@@ -49,7 +47,7 @@ runs:
               title: "",
               summary: ""
             },
-            ...github.context.repo
+            ...context.repo
           });
           return { id: check.data.id }
 
@@ -79,8 +77,6 @@ runs:
         script: |
           const summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
           const resp = await github.rest.checks.update({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
             check_run_id: ${{ fromJSON(steps.check-run.outputs.result).id }},
             status: "completed",
             conclusion: "${{ steps.analysis.conclusion }}",
@@ -88,7 +84,7 @@ runs:
               title: "${{ steps.analysis.outputs.title }}",
               summary: summary
             },
-            ...github.context.repo
+            ...context.repo
           });
           console.log(`Check run create response: ${resp.status}`)
           console.log(`Check run URL: ${resp.data.url}`)
