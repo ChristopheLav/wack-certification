@@ -37,8 +37,6 @@ runs:
     - name: "Create a check run"
       id: check-run
       uses: actions/github-script@v6
-      env:
-        parameter_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
       with:
         script: |
           const check = await github.rest.checks.create({
@@ -47,11 +45,11 @@ runs:
             head_sha: context.sha,
             name: "${{ inputs.name }}",
             status: "in_progress",
-            details_url: process.env.parameter_url,
             output: {
               title: "",
               summary: ""
             },
+            ...github.context.repo
           });
           return { id: check.data.id }
 
@@ -90,6 +88,7 @@ runs:
               title: "${{ steps.analysis.outputs.title }}",
               summary: summary
             },
+            ...github.context.repo
           });
           console.log(`Check run create response: ${resp.status}`)
           console.log(`Check run URL: ${resp.data.url}`)
