@@ -52,9 +52,10 @@ runs:
       uses: actions/github-script@v6
       env:
         parameter_url: '${{ github.event.workflow_run.html_url }}'
+        summary_file: '${{ steps.analysis.outputs.summaryPath }}'
       with:
         script: |
-          var summary = require("fs").readFileSync("${{ github.workspace }}/wack-certification/summary.md", "utf-8");
+          var summary = require("fs").readFileSync(process.env.summary_file, "utf-8");
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,

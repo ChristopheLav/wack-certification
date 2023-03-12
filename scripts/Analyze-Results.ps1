@@ -127,5 +127,6 @@ if($results) {
 
     Write-Output "name=check-wack-$r_arch" >> $env:GITHUB_OUTPUT
     Write-Output "title=$title" >> $env:GITHUB_OUTPUT
+    Write-Output "summaryPath=$summaryPath" >> $env:GITHUB_OUTPUT
     
 }
