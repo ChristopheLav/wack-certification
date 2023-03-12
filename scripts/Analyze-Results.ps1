@@ -20,15 +20,15 @@ $ThreatAsWarningRules = $threatAsWarning -split ',' -replace '^\s+|\s+$' | ForEa
 $results = Select-Xml -XPath "//TEST" -Path $reportPath
 if($results) { 
     $metadata = Select-Xml -XPath "//REPORT" -Path $reportPath
-    $r_arch = $metadata[0].TOOLSET_ARCHITECTURE
-    $r_os = $metadata[0].OS
-    $r_os_version = $metadata[0].VERSION
-    $r_result = $metadata[0].OVERALL_RESULT
+    $r_arch = $metadata[0].Node.TOOLSET_ARCHITECTURE
+    $r_os = $metadata[0].Node.OS
+    $r_os_version = $metadata[0].Node.VERSION
+    $r_result = $metadata[0].Node.OVERALL_RESULT
     $r_result_icon = if ($r_result -ieq "PASS") { ":white_check_mark:" } else { ":x:" }
-    $r_app_type = $metadata[0].APP_TYPE
-    $r_app_name = $metadata[0].APP_NAME
-    $r_app_version = $metadata[0].APP_VERSION
-    $r_report_time = $metadata[0].ReportGenerationTime
+    $r_app_type = $metadata[0].Node.APP_TYPE
+    $r_app_name = $metadata[0].Node.APP_NAME
+    $r_app_version = $metadata[0].Node.APP_VERSION
+    $r_report_time = $metadata[0].Node.ReportGenerationTime
 
     "# Windows App Certification Kit ($r_arch)" >> $env:GITHUB_STEP_SUMMARY
     "## Certification Summary" >> $env:GITHUB_STEP_SUMMARY
