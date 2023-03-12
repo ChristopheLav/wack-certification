@@ -49,7 +49,9 @@ if($results) {
             $r_desc = $result.Node.Description
             $r_time = $result.Node.EXECUTIONTIME
             $r_optional = $result.Node.OPTIONAL
-            if ($IgnoreRules -notcontains $r_id) {
+            if ($IgnoreRules -contains $r_id) {
+                $summary += "`n| $r_id | $r_desc  | $r_optional | :heavy_minus_sign: IGNORED | $r_time |"
+            } else {
                 switch($result.Node.Result.InnerText) {
                     "FAIL" { 
                         if ($ThreatAsWarningRules -contains $r_id) {
@@ -73,8 +75,6 @@ if($results) {
                         $summary += "`n| $r_id | $r_desc  | $r_optional | :grey_question: UNKNOW | $r_time |"
                     }
                 }
-            } else {
-                $summary += "`n| $r_id | $r_desc  | $r_optional | :heavy_minus_sign: IGNORED | $r_time |"
             }
         }
     }
