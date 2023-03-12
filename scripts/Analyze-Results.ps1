@@ -38,6 +38,7 @@ if($results) {
     $countSuccess = 0
     $countFailed = 0
     $countUnknow = 0
+    $countIgnored = 0
 
     $summary += "`n## Results"
     $summary += "`n| ID | Description | Optional | Result | Time |"
@@ -49,12 +50,13 @@ if($results) {
             $r_desc = $result.Node.Description
             $r_time = $result.Node.EXECUTIONTIME
             $r_optional = $result.Node.OPTIONAL
-            if ($IgnoreRules -contains $r_id) {
+            if ($IgnoreRules.Contains($r_id)) {
+                $countIgnored++
                 $summary += "`n| $r_id | $r_desc  | $r_optional | :heavy_minus_sign: IGNORED | $r_time |"
             } else {
                 switch($result.Node.Result.InnerText) {
                     "FAIL" { 
-                        if ($ThreatAsWarningRules -contains $r_id) {
+                        if ($ThreatAsWarningRules.Contains($r_id)) {
                             $countUnknow++
                             Write-Host ("::warning::[FAIL][{0}] {1}" -f $r_id,$r_desc)
                             $summary += "`n| $r_id | $r_desc | $r_optional | :warning: FAIL | $r_time |"
@@ -80,6 +82,7 @@ if($results) {
     }
 
     Write-Host ("{0} WACK tests succeeded" -f $countSuccess)
+    Write-Host ("{0} WACK tests ignored" -f $countIgnored)
     Write-Host ("{0} WACK tests in unknow state" -f $countUnknow)
     Write-Host ("{0} WACK tests failed" -f $countFailed)
 
