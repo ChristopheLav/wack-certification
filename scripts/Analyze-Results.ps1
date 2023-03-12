@@ -34,44 +34,13 @@ if($results) {
     $title = "WACK ($r_arch)"
     $summary = ""
 
-    "# Windows App Certification Kit ($r_arch)" >> $env:GITHUB_STEP_SUMMARY
-    "## Summary" >> $env:GITHUB_STEP_SUMMARY
-    "__Overall Result:__ $r_result" >> $env:GITHUB_STEP_SUMMARY
-    "__Operating System:__ $r_os" >> $env:GITHUB_STEP_SUMMARY
-    "__Operating System Version:__ $r_os_version" >> $env:GITHUB_STEP_SUMMARY
-    "__Architecture:__ $r_arch" >> $env:GITHUB_STEP_SUMMARY
-    "__Application Type:__ $r_app_type" >> $env:GITHUB_STEP_SUMMARY
-    "__Application Name:__ $r_app_name" >> $env:GITHUB_STEP_SUMMARY
-    "__Application Version:__ $r_app_version" >> $env:GITHUB_STEP_SUMMARY
-    "__Generation Time:__ $r_report_time" >> $env:GITHUB_STEP_SUMMARY
-
-    "## Results" >> $env:GITHUB_STEP_SUMMARY
-    "| ID | Description | Result |" >> $env:GITHUB_STEP_SUMMARY
-    "| - | - | - |" >> $env:GITHUB_STEP_SUMMARY
-
-
-
-
-    $summary += "`n# Windows App Certification Kit ($r_arch)"
-    $summary += "`n## Summary"
-    $summary += "`n__Overall Result:__ $r_result"
-    $summary += "`n__Operating System:__ $r_os"
-    $summary += "`n__Operating System Version:__ $r_os_version"
-    $summary += "`n__Architecture:__ $r_arch"
-    $summary += "`n__Application Type:__ $r_app_type"
-    $summary += "`n__Application Name:__ $r_app_name"
-    $summary += "`n__Application Version:__ $r_app_version"
-    $summary += "`n__Generation Time:__ $r_report_time"
+    $countSuccess = 0
+    $countFailed = 0
+    $countUnknow = 0
 
     $summary += "`n## Results"
     $summary += "`n| ID | Description | Result |"
     $summary += "`n| - | - | - |"
-
-
-
-    $countSuccess = 0
-    $countFailed = 0
-    $countUnknow = 0
 
     if($results.Count -gt 0) {
         foreach($result in $results) {
@@ -124,7 +93,39 @@ if($results) {
         Write-Host "Certification has succeed!"
     }
 
+    # "# Windows App Certification Kit ($r_arch)" >> $env:GITHUB_STEP_SUMMARY
+    # "## Summary" >> $env:GITHUB_STEP_SUMMARY
+    # "__Overall Result:__ $r_result" >> $env:GITHUB_STEP_SUMMARY
+    # "__Operating System:__ $r_os" >> $env:GITHUB_STEP_SUMMARY
+    # "__Operating System Version:__ $r_os_version" >> $env:GITHUB_STEP_SUMMARY
+    # "__Architecture:__ $r_arch" >> $env:GITHUB_STEP_SUMMARY
+    # "__Application Type:__ $r_app_type" >> $env:GITHUB_STEP_SUMMARY
+    # "__Application Name:__ $r_app_name" >> $env:GITHUB_STEP_SUMMARY
+    # "__Application Version:__ $r_app_version" >> $env:GITHUB_STEP_SUMMARY
+    # "__Generation Time:__ $r_report_time" >> $env:GITHUB_STEP_SUMMARY
+
+    # "## Results" >> $env:GITHUB_STEP_SUMMARY
+    # "| ID | Description | Result |" >> $env:GITHUB_STEP_SUMMARY
+    # "| - | - | - |" >> $env:GITHUB_STEP_SUMMARY
+
+    $preSummary = ""
+    $preSummary += "`n# Windows App Certification Kit ($r_arch)"
+    $preSummary += "`n## Summary"
+    $preSummary += "`n__Overall Result:__ " + (if ($countFailed -gt 0) { ":x:" } else { ":white_check_mark:" })
+    $preSummary += "`n__Operating System:__ $r_os"
+    $preSummary += "`n__Operating System Version:__ $r_os_version"
+    $preSummary += "`n__Architecture:__ $r_arch"
+    $preSummary += "`n__Application Type:__ $r_app_type"
+    $preSummary += "`n__Application Name:__ $r_app_name"
+    $preSummary += "`n__Application Version:__ $r_app_version"
+    $preSummary += "`n__Generation Time:__ $r_report_time"
+
+    $summary = $preSummary + $summary
+
+    $summaryPath = (Split-Path -parent $reportPath) + "\summary.md"
+    $summary | Out-File $summaryPath -Encoding utf8
+
     Write-Output "title=$title" >> $env:GITHUB_OUTPUT
-    Write-Output "summary=$summary" >> $env:GITHUB_OUTPUT
+    Write-Output "summaryPath=$summaryPath" >> $env:GITHUB_OUTPUT
     
 }

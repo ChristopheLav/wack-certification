@@ -54,6 +54,7 @@ runs:
         parameter_url: '${{ github.event.workflow_run.html_url }}'
       with:
         script: |
+          var summary = require("fs").readFileSync("${{ steps.analysis.outputs.summaryPath }}", "utf-8");
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -64,7 +65,7 @@ runs:
             details_url: process.env.parameter_url,
             output: {
               title: "${{ steps.analysis.outputs.title }}",
-              summary: "${{ steps.analysis.outputs.summary }}"
+              summary: summary
             },
           });
 
