@@ -19,16 +19,27 @@ $ThreatAsWarningRules = $threatAsWarning -split ',' -replace '^\s+|\s+$' | ForEa
 
 $results = Select-Xml -XPath "//TEST" -Path $reportPath
 if($results) { 
-    "## Metadata" >> $env:GITHUB_STEP_SUMMARY
     $metadata = Select-Xml -XPath "//REPORT" -Path $reportPath
-    "__Overall Result:__ ${metadata[0].OVERALL_RESULT}" >> $env:GITHUB_STEP_SUMMARY
-    "__Operating System:__ ${metadata[0].OS}" >> $env:GITHUB_STEP_SUMMARY
-    "__Operating System Version:__ ${metadata[0].VERSION}" >> $env:GITHUB_STEP_SUMMARY
-    "__Architecture:__ ${metadata[0].TOOLSET_ARCHITECTURE}" >> $env:GITHUB_STEP_SUMMARY
-    "__Application Type:__ ${metadata[0].APP_TYPE}" >> $env:GITHUB_STEP_SUMMARY
-    "__Application Name:__ ${metadata[0].APP_NAME}" >> $env:GITHUB_STEP_SUMMARY
-    "__Application Version:__ ${metadata[0].APP_VERSION}" >> $env:GITHUB_STEP_SUMMARY
-    "__Generation Time:__ ${metadata[0].ReportGenerationTime}" >> $env:GITHUB_STEP_SUMMARY
+    $r_arch = $metadata[0].TOOLSET_ARCHITECTURE
+    $r_os = $metadata[0].OS
+    $r_os_version = $metadata[0].VERSION
+    $r_result = $metadata[0].OVERALL_RESULT
+    $r_result_icon = if ($r_result -ieq "PASS") { ":white_check_mark:" } else { ":x:" }
+    $r_app_type = $metadata[0].APP_TYPE
+    $r_app_name = $metadata[0].APP_NAME
+    $r_app_version = $metadata[0].APP_VERSION
+    $r_report_time = $metadata[0].ReportGenerationTime
+
+    "# Windows App Certification Kit ($r_arch)" >> $env:GITHUB_STEP_SUMMARY
+    "## Certification Summary" >> $env:GITHUB_STEP_SUMMARY
+    "__Overall Result:__ $r_result" >> $env:GITHUB_STEP_SUMMARY
+    "__Operating System:__ $r_os" >> $env:GITHUB_STEP_SUMMARY
+    "__Operating System Version:__ $r_os_version" >> $env:GITHUB_STEP_SUMMARY
+    "__Architecture:__ $r_arch" >> $env:GITHUB_STEP_SUMMARY
+    "__Application Type:__ $r_app_type" >> $env:GITHUB_STEP_SUMMARY
+    "__Application Name:__ $r_app_name" >> $env:GITHUB_STEP_SUMMARY
+    "__Application Version:__ $r_app_version" >> $env:GITHUB_STEP_SUMMARY
+    "__Generation Time:__ $r_report_time" >> $env:GITHUB_STEP_SUMMARY
 
     "## Certification Results" >> $env:GITHUB_STEP_SUMMARY
     "| ID | Description | Result |" >> $env:GITHUB_STEP_SUMMARY
@@ -39,32 +50,34 @@ if($results) {
         $countUnknow = 0
 
         foreach($result in $results) {
+            $r_id = $result.Node.Index
+            $r_desc = $result.Node.Description
             if ($IgnoreRules -notcontains $result.Node.Index) {
                 switch($result.Node.Result.InnerText) {
                     "FAIL" { 
-                        if ($ThreatAsWarningRules -contains $result.Node.Index) {
+                        if ($ThreatAsWarningRules -contains $r_id) {
                             $countUnknow++
-                            Write-Host ("::warning::[FAIL][{0}] {1}" -f $result.Node.Index,$result.Node.Description)
-                            "| ${result.Node.Index} | ${result.Node.Description} | :warning: FAIL |" >> $env:GITHUB_STEP_SUMMARY
+                            Write-Host ("::warning::[FAIL][{0}] {1}" -f $r_id,$r_desc)
+                            "| $r_id | $r_desc | :warning: FAIL |" >> $env:GITHUB_STEP_SUMMARY
                         } else {
                             $countFailed++
-                            Write-Host ("::error::[FAIL][{0}] {1}" -f $result.Node.Index,$result.Node.Description)
-                            "| ${result.Node.Index} | ${result.Node.Description} | :x: FAIL |" >> $env:GITHUB_STEP_SUMMARY
+                            Write-Host ("::error::[FAIL][{0}] {1}" -f $r_id,$r_desc)
+                            "| $r_id | $r_desc | :x: FAIL |" >> $env:GITHUB_STEP_SUMMARY
                         }
                     }
                     "PASS" { 
                         $countSuccess++
-                        Write-Host ("[PASS][{0}] {1}" -f $result.Node.Index,$result.Node.Description)
-                        "| ${result.Node.Index} | ${result.Node.Description} | :white_check_mark: PASS |" >> $env:GITHUB_STEP_SUMMARY
+                        Write-Host ("[PASS][{0}] {1}" -f $r_id,$r_desc)
+                        "| $r_id | $r_desc | :white_check_mark: PASS |" >> $env:GITHUB_STEP_SUMMARY
                     }
                     default { 
                         $countUnknow++
-                        Write-Host ("::warning::[UNKNOW][{0}] {1}" -f $result.Node.Index,$result.Node.Description)
-                        "| ${result.Node.Index} | ${result.Node.Description} | :grey_question: UNKNOW |" >> $env:GITHUB_STEP_SUMMARY
+                        Write-Host ("::warning::[UNKNOW][{0}] {1}" -f $r_id,$r_desc)
+                        "| $r_id | $r_desc | :grey_question: UNKNOW |" >> $env:GITHUB_STEP_SUMMARY
                     }
                 }
             } else {
-                "| ${result.Node.Index} | ${result.Node.Description} | :heavy_minus_sign: IGNORED |" >> $env:GITHUB_STEP_SUMMARY
+                "| $r_id | $r_desc | :heavy_minus_sign: IGNORED |" >> $env:GITHUB_STEP_SUMMARY
             }
         }
 
