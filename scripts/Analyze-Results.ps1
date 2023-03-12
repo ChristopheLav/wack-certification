@@ -3,10 +3,10 @@ param(
     [Parameter(Mandatory=$true, Position=0)]
     [string]$reportPath,
 
-    [Parameter(Mandatory=$true, Position=1)]
+    [Parameter(Mandatory=$false, Position=1)]
     [string]$ignoreRules,
 
-    [Parameter(Mandatory=$true, Position=2)]
+    [Parameter(Mandatory=$false, Position=2)]
     [string]$threatAsWarning
 )
 

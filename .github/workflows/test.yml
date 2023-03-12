@@ -44,10 +44,19 @@ jobs:
         id: certification
         uses: ./
         with:
-          name: 'WACK (x64)'
+          name: 'WACK (x64 - 1)'
           package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
-          report-name: 'DemoApp.Certification.xml'
+          report-name: 'DemoApp.Certification.1.xml'
           ignore-rules: '38,81'
+          threat-as-warning-rules: '61'
+
+      - name: Run the WACK of the test project (without ignore rules)
+        id: certification
+        uses: ./
+        with:
+          name: 'WACK (x64 - 2)'
+          package-path: ${{ github.workspace }}\b\x64\DemoApp\AppPackages\DemoApp_1.0.0.0_Test\DemoApp_1.0.0.0_x64.msixbundle
+          report-name: 'DemoApp.Certification.2.xml'
           threat-as-warning-rules: '61'
 
       - name: Upload Certification report
