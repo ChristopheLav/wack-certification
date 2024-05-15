@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: certification
+          name: certification-1
           path: ${{ steps.certification-1.outputs.report-path }}
 
       - name: Run the WACK of the test project (without ignore rules)
@@ -70,5 +70,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: certification
+          name: certification-2
           path: ${{ steps.certification-2.outputs.report-path }}
