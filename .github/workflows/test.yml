@@ -14,7 +14,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
@@ -25,12 +25,12 @@ jobs:
           features: "OptionId.UWPCPP, OptionId.DesktopCPPx64, OptionId.DesktopCPPx86, OptionId.DesktopCPParm64, OptionId.DesktopCPParm"
 
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
+        uses: nuget/setup-nuget@v2
         with:
           nuget-version: '6.2.x'
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
         with:
           vs-version: '[17.2,18.0)'
 
@@ -51,7 +51,7 @@ jobs:
           threat-as-warning-rules: '61'
 
       - name: Upload Certification report 1
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: certification
@@ -67,7 +67,7 @@ jobs:
           threat-as-warning-rules: '61'
 
       - name: Upload Certification report 2
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: certification
