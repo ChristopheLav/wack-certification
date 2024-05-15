@@ -18,7 +18,7 @@
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint>64D77511F9EE850C4272A8F375BDC1C0E4EED688</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>2365C65A51AB99ADBD3928B4ACF464EEB664B81C</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>DemoApp_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
