@@ -34,11 +34,33 @@ jobs:
         with:
           vs-version: '[18.0,19.0)'
 
+      - name: Generate temporary signing certificate
+        id: signing-cert
+        shell: pwsh
+        run: |
+          $certificatePath = Join-Path $env:GITHUB_WORKSPACE '.github\DemoApp\DemoApp_TemporaryKey.pfx'
+          $certificatePassword = 'wack-certification'
+          $certificate = New-SelfSignedCertificate `
+            -Type CodeSigningCert `
+            -Subject 'CN=DemoApp Temporary Key' `
+            -CertStoreLocation 'Cert:\CurrentUser\My' `
+            -KeyExportPolicy Exportable `
+            -KeyLength 2048 `
+            -HashAlgorithm SHA256
+
+          $securePassword = ConvertTo-SecureString -String $certificatePassword -AsPlainText -Force
+          Export-PfxCertificate -Cert $certificate -FilePath $certificatePath -Password $securePassword | Out-Null
+
+          "thumbprint=$($certificate.Thumbprint)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "password=$certificatePassword" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+          Remove-Item "Cert:\CurrentUser\My\$($certificate.Thumbprint)" -ErrorAction SilentlyContinue
+
       - name: Install dependencies
         run: msbuild .github\DemoApp\DemoApp.sln -t:restore /p:RestoreLockedMode=true /p:platform=x64 /p:configuration=Release
 
       - name: Build application
-        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:AppxBundlePlatforms=x64 /p:AppxBundle=Always /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload
+        run: msbuild .github\DemoApp\DemoApp.sln -t:rebuild /m /p:OutDir=${{ github.workspace }}\b\x64\ /p:GenerateProjectSpecificOutputFolder=true /p:AppxBundlePlatforms=x64 /p:AppxBundle=Always /p:platform=x64 /p:configuration=Release /p:IsStoreBuild=true /p:UapAppxPackageBuildMode=StoreUpload /p:PackageCertificateKeyFile=${{ github.workspace }}\.github\DemoApp\DemoApp_TemporaryKey.pfx /p:PackageCertificateThumbprint=${{ steps.signing-cert.outputs.thumbprint }} /p:PackageCertificatePassword=${{ steps.signing-cert.outputs.password }}
 
       - name: Run the WACK of the test project
         id: certification-1
