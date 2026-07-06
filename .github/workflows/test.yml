@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
       - name: Install the Windows SDK 22621
         uses: ChristopheLav/windows-sdk-install@v1
