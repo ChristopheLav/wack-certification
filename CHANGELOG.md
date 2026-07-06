@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.3
+
+- Updated actions/github-script action to v9 (NodeJS upgrade)
+
 ## v1.0.2
 
 - Updated actions/github-script action to v7 (NodeJS upgrade)
