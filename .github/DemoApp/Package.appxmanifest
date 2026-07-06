@@ -8,7 +8,7 @@
 
   <Identity
     Name="d2afc42d-f989-4959-a091-ad2bca4e6dd9"
-    Publisher="CN=Demo"
+    Publisher="CN=DemoApp Temporary Key"
     Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="d2afc42d-f989-4959-a091-ad2bca4e6dd9" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
