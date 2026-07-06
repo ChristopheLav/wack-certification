@@ -22,7 +22,7 @@ jobs:
         uses: ChristopheLav/windows-sdk-install@v1
         with:
           version-sdk: 26100
-          features: "OptionId.UWPCPP, OptionId.DesktopCPPx64, OptionId.DesktopCPPx86, OptionId.DesktopCPParm64, OptionId.DesktopCPParm"
+          features: "OptionId.UWPCPP, OptionId.DesktopCPPx64"
 
       - name: Setup NuGet
         uses: nuget/setup-nuget@v4
