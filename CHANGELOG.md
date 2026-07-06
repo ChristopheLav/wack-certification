@@ -2,7 +2,7 @@
 
 ## v1.0.3
 
-- Updated actions/github-script action to v9 (NodeJS upgrade)
+- Updated actions/github-script action to v9 (Node.js upgrade)
 
 ## v1.0.2
 
